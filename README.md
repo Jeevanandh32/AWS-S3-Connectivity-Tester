@@ -46,9 +46,6 @@ export AWS_ACCESS_KEY_ID=AKIAIOSFODNN7EXAMPLE
 export AWS_SECRET_ACCESS_KEY=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
 python3 s3_connectivity_tester.py
 
-What Gets Tested
-The tool performs these tests in order:
-TestWhat It ChecksCommon IssuesCredentialsAre AWS keys valid?Wrong keys, expired keysList BucketsCan you see S3 buckets?No S3 permissionsCreate BucketCan you create new buckets?Region issues, naming conflictsUpload ObjectCan you write files?Write permissions missingRead ObjectCan you download files?Read permissions missingObject MetadataCan you get file info?HEAD operation blockedDelete ObjectCan you delete files?Delete permissions missingMultipart UploadCan you upload large files?Complex upload issuesVersioningCan you enable versioning?Bucket feature permissionsCleanupRemoves all test resourcesPrevents AWS charges
 
 Example Output
 🚀 Starting S3 Connectivity Tests...
