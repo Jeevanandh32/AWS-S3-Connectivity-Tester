@@ -1,105 +1,95 @@
-# S3 Connectivity Tester
+S3 Connectivity Tester
 
-A comprehensive Python tool for testing AWS S3 connectivity and operations.
+A simple Python utility to validate AWS S3 access and basic operations.
+Useful for troubleshooting IAM permissions, testing new S3 endpoints, or verifying network routes to AWS.
 
-## Features
+What it does
 
-- ✅ Credential validation
-- ✅ Bucket operations (create, list, delete)
-- ✅ Object operations (upload, download, delete)
-- ✅ Metadata retrieval (HEAD operations)
-- ✅ Multipart upload testing
-- ✅ Versioning configuration
-- ✅ Comprehensive error handling
-- ✅ Detailed test reporting
+This tool performs a sequence of S3 checks, including:
 
-## Prerequisites
+Credential validation
 
-- Python 3.7+
-- AWS Account with S3 access
-- Configured AWS credentials
+Listing buckets
 
-## Installation
-```bash
-# Clone repository
+Creating and deleting a test bucket
+
+Upload, download, and delete of a test object
+
+Object metadata lookup (HEAD request)
+
+Multipart upload flow
+
+Bucket versioning check
+
+Cleanup of all test data
+
+JSON test report output
+
+It’s meant to give you a quick “yes or no” answer on whether your environment can talk to S3 and perform standard operations.
+
+Note: This script creates temporary buckets and objects. They are removed at the end of the run.
+
+Requirements
+
+Python 3.7 or newer
+
+AWS account with S3 permissions
+
+AWS credentials configured (env vars, AWS CLI, or shared credentials file)
+
+Setup
 git clone https://github.com/jeevanandh32/s3-connectivity_tester.git
 cd s3-connectivity-tester
-```
-# Create virtual environment
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
 
-# Install dependencies
+
+Create a virtual environment:
+
+python3 -m venv venv
+source venv/bin/activate   # Windows: venv\Scripts\activate
+
+
+Install dependencies:
+
 pip install -r requirements.txt
 
-Basic Test
-# Run all tests with default settings
-python3 s3_connectivity_tester.py
-Specify Region
+Usage
 
-# Test S3 in specific region
+Run all tests (default region: us-east-1):
+
+python3 s3_connectivity_tester.py
+
+
+Specify a region:
+
 python3 s3_connectivity_tester.py us-west-2
-Use Different Credentials
 
-# Set credentials via environment variables
-export AWS_ACCESS_KEY_ID=AKIAIOSFODNN7EXAMPLE
-export AWS_SECRET_ACCESS_KEY=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
+
+Use custom credentials:
+
+export AWS_ACCESS_KEY_ID=YOUR_KEY
+export AWS_SECRET_ACCESS_KEY=YOUR_SECRET
 python3 s3_connectivity_tester.py
-
 
 Example Output
-🚀 Starting S3 Connectivity Tests...
-==================================================
+Starting S3 Connectivity Tests
+--------------------------------------------
 
-🔐 Testing AWS Credentials...
-✅ Credentials valid for account: 123456789012
-   User/Role: arn:aws:iam::123456789012:user/john
+Credential Check .................... OK
+List Buckets ....................... OK
+Create Bucket ...................... OK
+Upload Object ...................... OK
+Read Object ........................ OK
+Head Object ........................ OK
+Delete Object ...................... OK
+Multipart Upload ................... OK
+Bucket Versioning .................. OK
+Cleanup Resources .................. OK
 
-📋 Testing List Buckets...
-✅ Successfully listed 3 bucket(s)
+All tests passed successfully.
+Report saved: s3_test_report_20250110_120545.json
 
-🪣 Testing Create Bucket: s3-test-789012-20250110120530...
-✅ Successfully created bucket
-
-📤 Testing Upload Object...
-✅ Successfully uploaded object: test-connectivity/test-file.txt
-
-📥 Testing Read Object...
-✅ Successfully read object
-   Content preview: Test upload at 2025-01-10T12:05:30...
-
-🔍 Testing HEAD Object...
-✅ Successfully retrieved object metadata:
-   Size: 42 bytes
-   Type: text/plain
-   ETag: "d41d8cd98f00b204e9800998ecf8427e"
-
-🗑️ Testing Delete Object...
-✅ Successfully deleted object
-
-📦 Testing Multipart Upload...
-✅ Successfully completed multipart upload
-
-📚 Testing Bucket Versioning...
-✅ Successfully configured bucket versioning
-
-🧹 Cleaning up test resources...
-✅ Successfully cleaned up bucket
-
-==================================================
-📊 S3 CONNECTIVITY TEST REPORT
-==================================================
-
-Test Summary:
-  Total Tests: 10
-  Passed: 10
-  Failed: 0
-  Success Rate: 100.0%
-
-📄 Report saved to: s3_test_report_20250110_120545.json
-Report Format
-The tool generates a JSON report with detailed results:
-json{
+JSON Report Example
+{
   "timestamp": "2025-01-10T12:05:45",
   "region": "us-east-1",
   "account": "123456789012",
@@ -119,7 +109,11 @@ json{
     "total": 10,
     "passed": 10,
     "failed": 0,
-    "success_rate": "100.0%"
+    "success_rate": "100%"
   },
   "errors": []
 }
+
+Why this exists
+
+When debugging S3 access issues, it’s helpful to have a small script that walks through real operations end-to-end. This avoids guessing whether a failure is because of IAM, networking, or your client configuration.
