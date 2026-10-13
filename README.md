@@ -1,5 +1,7 @@
 # S3 Connectivity Tester
 
+![AWS S3 Storage Diagnostic Automation](assets/banner.png)
+
 A lightweight Python script to validate AWS S3 access and core operations.
 Handy for checking IAM permissions, testing S3 endpoints, or confirming network paths to AWS.
 
