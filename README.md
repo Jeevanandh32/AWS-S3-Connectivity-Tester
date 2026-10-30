@@ -1,70 +1,66 @@
-# S3 Connectivity Tester
+# AWS S3 Connectivity Tester
 
 ![AWS S3 Storage Diagnostic Automation](assets/banner.png)
 
-A lightweight Python script to validate AWS S3 access and core operations.
-Handy for checking IAM permissions, testing S3 endpoints, or confirming network paths to AWS.
+A Python/boto3 diagnostic tool for checking AWS credentials and S3 API operations. It reports which checks passed or failed and writes a timestamped JSON report.
 
-## What it does
+## What the code checks
 
-The script runs a set of S3 operations end-to-end:
+- AWS credential validation through STS.
+- Bucket listing and creation of a uniquely named test bucket.
+- Object upload, read, metadata retrieval, and deletion.
+- Multipart upload and a request to enable bucket versioning.
+- Cleanup of the test resources, with partial failures reported.
 
-- Validate AWS credentials
-- List existing buckets
-- Create a temporary test bucket
-- Upload, download, and delete a test file
-- Retrieve object metadata (HEAD request)
-- Multipart upload test
-- Enable and verify bucket versioning
-- Cleanup all test resources
-- Generate a JSON test report
-
-The goal is to quickly verify that your environment can connect to S3 and perform standard actions without guessing.
+These checks exercise SDK access, permissions, and service operations. They do not isolate every possible network-path fault.
 
 ## Requirements
 
-- Python 3.7+
-- AWS credentials with S3 access (via env vars or AWS CLI)
+- Python 3.10 or newer.
+- AWS credentials available through the standard SDK credential chain, such as an existing AWS CLI profile.
+- Permission to perform the tested STS and S3 operations in a test account.
 
 ## Setup
 
 ```bash
-git clone https://github.com/jeevanandh32/s3-connectivity_tester.git
-cd s3-connectivity-tester
-python3 -m venv venv
-source venv/bin/activate   # Windows: venv\Scripts\activate
-pip install -r requirements.txt
+git clone https://github.com/Jeevanandh32/AWS-S3-Connectivity-Tester.git
+cd AWS-S3-Connectivity-Tester
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install -r requirements.txt
 ```
+
+On Windows, activate the environment with `.venv\Scripts\activate`.
+
 ## Run
+
+Use the default AWS profile and region:
+
 ```bash
-python3 s3_connectivity_tester.py
+python s3_connectivity_tester.py
 ```
 
-Specify a region:
-```
-python3 s3_connectivity_tester.py us-west-2
+Or select an existing profile and pass a region:
 
+```bash
+export AWS_PROFILE=your-test-profile
+python s3_connectivity_tester.py us-west-2
 ```
-Use custom credentials:
-```
-export AWS_ACCESS_KEY_ID=xxxxx
-export AWS_SECRET_ACCESS_KEY=xxxxx
-python3 s3_connectivity_tester.py
-```
-Example output: 
 
-S3 Connectivity Test
------------------------------
+The program creates a test bucket, writes and deletes test objects, changes that bucket's versioning setting, and attempts cleanup. It prints individual results and writes `s3_test_report_YYYYMMDD_HHMMSS.json`. Check any cleanup warning before leaving the account.
 
-Credentials .............. OK
-List Buckets ............ OK
-Create Bucket ........... OK
-Upload Object ........... OK
-Download Object ......... OK
-HEAD Object ............. OK
-Multipart Upload ........ OK
-Versioning .............. OK
-Cleanup ................. OK
+## Repository files
 
-All tests passed.
-Report saved to: s3_test_report_YYYYMMDD_HHMMSS.json
+| File | Purpose |
+|---|---|
+| `s3_connectivity_tester.py` | Main diagnostic workflow and JSON reporting |
+| `s3_operations.py` | Additional bucket and object operation examples |
+| `s3_error_handling.py` | Examples of handling SDK exceptions and S3 error responses |
+| `requirements.txt` | Python SDK dependency |
+
+## Measurement and implementation limits
+
+- No committed timing dataset establishes a speedup over manual diagnosis.
+- Versioning coverage checks configuration requests; it does not test restoring earlier object versions.
+- Cleanup is best-effort: the implementation does not enumerate every object version, delete marker, or unfinished multipart upload. Inspect and remove any leftover test resources if a run fails or is interrupted.
+- A successful run applies to the credentials, region, and operations tested; it is not a general statement about all S3 permissions or network paths.
